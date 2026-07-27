@@ -1,5 +1,5 @@
 <div align="center">
-  <img width="320px" src="assets/logo.jpg" alt="JarvaTech Logo" />
+  <img width="320px" src="assets/logo_transparent.png" alt="JarvaTech Logo" />
 </div>
 <h1 align="center">JarvaTech E-Commerce Performance & Operational Analysis</h1>
 <table align="center">
