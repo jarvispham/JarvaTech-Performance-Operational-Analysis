@@ -1,0 +1,3654 @@
+<!DOCTYPE html>
+<html lang="en" class="dark" style="color-scheme: dark;">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JarvaTech E-Commerce Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    .outfit {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .dark .glass {
+      background: rgba(30, 35, 48, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .chart-container {
+      position: relative;
+      height: 350px;
+      width: 100%;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #6c5ce7;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #a29bfe;
+    }
+  </style>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#6c5ce7',
+            secondary: '#00cec9',
+            accent1: '#a29bfe',
+            accent2: '#81ecec',
+            darkbg: '#090d16',
+            darkcard: '#1e2330'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-darkbg text-gray-200 transition-colors duration-300">
+
+  <!-- DATA INJECTION -->
+  <script>
+    const dashboardData = {
+      "company_name": "JarvaTech",
+      "kpis": {
+        "total_revenue": 28106034.86,
+        "total_orders": 107909,
+        "total_customers": 87518,
+        "avg_order_value": 260.46,
+        "refund_rate_percentage": 4.98,
+        "refund_revenue": 2234735.8,
+        "refund_count": 5377
+      },
+      "yearly_summary": [
+        {
+          "year": "2019",
+          "revenue": 3867499.58,
+          "orders": 16801,
+          "aov": 230.19
+        },
+        {
+          "year": "2020",
+          "revenue": 10153060.99,
+          "orders": 33795,
+          "aov": 300.43
+        },
+        {
+          "year": "2021",
+          "revenue": 9127894.44,
+          "orders": 35775,
+          "aov": 255.15
+        },
+        {
+          "year": "2022",
+          "revenue": 4957579.85,
+          "orders": 21538,
+          "aov": 230.18
+        }
+      ],
+      "sales_trend": [
+        {
+          "month": "2019-01",
+          "revenue": 362082.52,
+          "orders": 1666
+        },
+        {
+          "month": "2019-02",
+          "revenue": 246838.73,
+          "orders": 1122
+        },
+        {
+          "month": "2019-03",
+          "revenue": 274942.64,
+          "orders": 1254
+        },
+        {
+          "month": "2019-04",
+          "revenue": 271675.02,
+          "orders": 1228
+        },
+        {
+          "month": "2019-05",
+          "revenue": 277336.63,
+          "orders": 1180
+        },
+        {
+          "month": "2019-06",
+          "revenue": 260481.38,
+          "orders": 1102
+        },
+        {
+          "month": "2019-07",
+          "revenue": 318074.23,
+          "orders": 1355
+        },
+        {
+          "month": "2019-08",
+          "revenue": 306656.99,
+          "orders": 1368
+        },
+        {
+          "month": "2019-09",
+          "revenue": 372914.74,
+          "orders": 1595
+        },
+        {
+          "month": "2019-10",
+          "revenue": 305155.45,
+          "orders": 1258
+        },
+        {
+          "month": "2019-11",
+          "revenue": 412987.7,
+          "orders": 1680
+        },
+        {
+          "month": "2019-12",
+          "revenue": 458353.55,
+          "orders": 1993
+        },
+        {
+          "month": "2020-01",
+          "revenue": 460009.13,
+          "orders": 1774
+        },
+        {
+          "month": "2020-02",
+          "revenue": 479024.47,
+          "orders": 1643
+        },
+        {
+          "month": "2020-03",
+          "revenue": 720057.89,
+          "orders": 2397
+        },
+        {
+          "month": "2020-04",
+          "revenue": 841114.01,
+          "orders": 2868
+        },
+        {
+          "month": "2020-05",
+          "revenue": 883406.02,
+          "orders": 3064
+        },
+        {
+          "month": "2020-06",
+          "revenue": 807578.84,
+          "orders": 2806
+        },
+        {
+          "month": "2020-07",
+          "revenue": 856502.44,
+          "orders": 2895
+        },
+        {
+          "month": "2020-08",
+          "revenue": 963879.03,
+          "orders": 2999
+        },
+        {
+          "month": "2020-09",
+          "revenue": 1117685.91,
+          "orders": 3636
+        },
+        {
+          "month": "2020-10",
+          "revenue": 844247.63,
+          "orders": 2624
+        },
+        {
+          "month": "2020-11",
+          "revenue": 933548.75,
+          "orders": 3090
+        },
+        {
+          "month": "2020-12",
+          "revenue": 1246006.87,
+          "orders": 3999
+        },
+        {
+          "month": "2021-01",
+          "revenue": 1029590.56,
+          "orders": 3511
+        },
+        {
+          "month": "2021-02",
+          "revenue": 708242.32,
+          "orders": 2522
+        },
+        {
+          "month": "2021-03",
+          "revenue": 751315.12,
+          "orders": 2939
+        },
+        {
+          "month": "2021-04",
+          "revenue": 700846.59,
+          "orders": 2801
+        },
+        {
+          "month": "2021-05",
+          "revenue": 707922.02,
+          "orders": 2754
+        },
+        {
+          "month": "2021-06",
+          "revenue": 640375.83,
+          "orders": 2541
+        },
+        {
+          "month": "2021-07",
+          "revenue": 694568.52,
+          "orders": 2899
+        },
+        {
+          "month": "2021-08",
+          "revenue": 764837.53,
+          "orders": 3035
+        },
+        {
+          "month": "2021-09",
+          "revenue": 849596.99,
+          "orders": 3423
+        },
+        {
+          "month": "2021-10",
+          "revenue": 631597.86,
+          "orders": 2494
+        },
+        {
+          "month": "2021-11",
+          "revenue": 766631.12,
+          "orders": 3212
+        },
+        {
+          "month": "2021-12",
+          "revenue": 882369.98,
+          "orders": 3644
+        },
+        {
+          "month": "2022-01",
+          "revenue": 704987.29,
+          "orders": 3001
+        },
+        {
+          "month": "2022-02",
+          "revenue": 472508.05,
+          "orders": 1989
+        },
+        {
+          "month": "2022-03",
+          "revenue": 509139.72,
+          "orders": 2183
+        },
+        {
+          "month": "2022-04",
+          "revenue": 474613.47,
+          "orders": 2067
+        },
+        {
+          "month": "2022-05",
+          "revenue": 471052.23,
+          "orders": 2125
+        },
+        {
+          "month": "2022-06",
+          "revenue": 420233.98,
+          "orders": 1895
+        },
+        {
+          "month": "2022-07",
+          "revenue": 460292.2,
+          "orders": 2032
+        },
+        {
+          "month": "2022-08",
+          "revenue": 397805.61,
+          "orders": 1834
+        },
+        {
+          "month": "2022-09",
+          "revenue": 397961.04,
+          "orders": 1551
+        },
+        {
+          "month": "2022-10",
+          "revenue": 178274.91,
+          "orders": 821
+        },
+        {
+          "month": "2022-11",
+          "revenue": 208366.25,
+          "orders": 920
+        },
+        {
+          "month": "2022-12",
+          "revenue": 262345.1,
+          "orders": 1120
+        }
+      ],
+      "top_products": [
+        {
+          "name": "27 Inch 4K Gaming Monitor",
+          "revenue": 9206272.63,
+          "units": 21933,
+          "total_orders": 23378,
+          "refund_count": 1445,
+          "refund_rate": 6.18
+        },
+        {
+          "name": "Apple Airpods Headphones",
+          "revenue": 7308180.76,
+          "units": 45756,
+          "total_orders": 48392,
+          "refund_count": 2636,
+          "refund_rate": 5.45
+        },
+        {
+          "name": "Macbook Air Laptop",
+          "revenue": 5547143.96,
+          "units": 3504,
+          "total_orders": 3956,
+          "refund_count": 452,
+          "refund_rate": 11.43
+        },
+        {
+          "name": "Thinkpad Laptop",
+          "revenue": 2823271.94,
+          "units": 2569,
+          "total_orders": 2912,
+          "refund_count": 343,
+          "refund_rate": 11.78
+        },
+        {
+          "name": "Samsung Charging Cable Pack",
+          "revenue": 433561.9,
+          "units": 21494,
+          "total_orders": 21787,
+          "refund_count": 293,
+          "refund_rate": 1.34
+        },
+        {
+          "name": "Samsung Webcam",
+          "revenue": 352346.42,
+          "units": 6983,
+          "total_orders": 7169,
+          "refund_count": 186,
+          "refund_rate": 2.59
+        },
+        {
+          "name": "Apple Iphone",
+          "revenue": 197182.41,
+          "units": 266,
+          "total_orders": 288,
+          "refund_count": 22,
+          "refund_rate": 7.64
+        },
+        {
+          "name": "Bose Soundsport Headphones",
+          "revenue": 3339.04,
+          "units": 27,
+          "total_orders": 27,
+          "refund_count": 0,
+          "refund_rate": 0.0
+        }
+      ],
+      "product_yearly_trend": {
+        "27 Inch 4K Gaming Monitor": {
+          "2019": 1448197.14,
+          "2020": 3091757.32,
+          "2021": 3355566.54,
+          "2022": 1953471.0
+        },
+        "Thinkpad Laptop": {
+          "2019": 397458.17,
+          "2022": 502558.38,
+          "2020": 1279124.4,
+          "2021": 1027175.27
+        },
+        "Apple Airpods Headphones": {
+          "2021": 2483235.68,
+          "2019": 1284211.55,
+          "2022": 1419723.08,
+          "2020": 2550766.36
+        },
+        "Samsung Webcam": {
+          "2020": 73096.89,
+          "2021": 170893.51,
+          "2022": 117907.36
+        },
+        "Samsung Charging Cable Pack": {
+          "2020": 131089.2,
+          "2021": 133507.2,
+          "2019": 96781.97,
+          "2022": 81027.64
+        },
+        "Macbook Air Laptop": {
+          "2019": 606750.82,
+          "2020": 2932999.52,
+          "2022": 852247.33,
+          "2021": 1899821.9
+        },
+        "Apple Iphone": {
+          "2020": 92109.44,
+          "2021": 56575.14,
+          "2019": 34099.93,
+          "2022": 30543.08
+        },
+        "Bose Soundsport Headphones": {
+          "2020": 2117.86,
+          "2021": 1119.2,
+          "2022": 101.98
+        }
+      },
+      "product_monthly_trend": {
+        "27 Inch 4K Gaming Monitor": {
+          "2019-09": 158096.25,
+          "2020-11": 287894.3,
+          "2019-06": 91977.73,
+          "2021-12": 351480.81,
+          "2021-09": 343457.98,
+          "2020-08": 259272.02,
+          "2020-06": 244796.32,
+          "2021-07": 264327.53,
+          "2019-12": 171554.2,
+          "2019-11": 163970.01,
+          "2021-08": 278480.25,
+          "2020-09": 342806.12,
+          "2022-09": 156258.99,
+          "2020-07": 262295.97,
+          "2021-04": 253491.84,
+          "2021-06": 237487.66,
+          "2020-12": 365126.64,
+          "2020-03": 223411.6,
+          "2020-10": 248168.97,
+          "2021-05": 248922.57,
+          "2021-11": 309774.2,
+          "2021-01": 324851.62,
+          "2022-02": 193068.52,
+          "2022-01": 281564.36,
+          "2022-11": 87223.49,
+          "2022-10": 77681.64,
+          "2021-02": 235054.23,
+          "2022-06": 160470.71,
+          "2021-10": 246019.93,
+          "2019-01": 118586.21,
+          "2020-05": 270639.71,
+          "2022-05": 176822.97,
+          "2022-04": 167256.86,
+          "2020-02": 162585.79,
+          "2022-07": 165917.13,
+          "2020-04": 257888.2,
+          "2019-08": 112726.36,
+          "2022-03": 195161.87,
+          "2019-02": 87065.67,
+          "2021-03": 262217.92,
+          "2019-03": 92911.51,
+          "2022-12": 130566.3,
+          "2019-10": 125777.34,
+          "2022-08": 161478.16,
+          "2019-07": 117614.12,
+          "2019-05": 94729.68,
+          "2019-04": 113188.06,
+          "2020-01": 166871.68
+        },
+        "Thinkpad Laptop": {
+          "2019-12": 45139.79,
+          "2022-01": 31003.15,
+          "2020-08": 130577.15,
+          "2021-09": 96976.86,
+          "2022-12": 27764.37,
+          "2021-12": 54383.31,
+          "2019-11": 53067.6,
+          "2022-04": 62939.78,
+          "2022-06": 58313.57,
+          "2020-06": 92511.28,
+          "2019-06": 37396.38,
+          "2022-02": 23197.47,
+          "2020-02": 54341.54,
+          "2022-07": 61501.44,
+          "2019-04": 22594.14,
+          "2020-03": 86678.74,
+          "2020-04": 98169.21,
+          "2021-03": 86114.36,
+          "2020-05": 115737.38,
+          "2019-09": 36710.81,
+          "2022-09": 59961.38,
+          "2020-09": 147350.16,
+          "2021-01": 139293.07,
+          "2021-02": 91895.19,
+          "2021-06": 90070.19,
+          "2020-07": 105965.04,
+          "2022-03": 44756.01,
+          "2021-04": 80618.7,
+          "2020-12": 199244.59,
+          "2020-11": 103859.14,
+          "2020-10": 97677.45,
+          "2019-10": 28684.55,
+          "2019-03": 32794.37,
+          "2021-11": 36296.01,
+          "2021-08": 123211.25,
+          "2022-08": 48437.74,
+          "2019-08": 28747.53,
+          "2021-05": 93766.91,
+          "2022-05": 45458.54,
+          "2019-02": 25941.01,
+          "2022-11": 27794.02,
+          "2019-01": 24955.22,
+          "2021-07": 88431.98,
+          "2019-05": 26796.37,
+          "2019-07": 34630.4,
+          "2020-01": 47012.72,
+          "2021-10": 46117.44,
+          "2022-10": 11430.91
+        },
+        "Apple Airpods Headphones": {
+          "2021-12": 229814.99,
+          "2019-08": 112093.8,
+          "2019-11": 130823.62,
+          "2022-01": 197375.17,
+          "2020-12": 301602.49,
+          "2022-09": 101691.78,
+          "2021-10": 167315.6,
+          "2020-07": 230033.2,
+          "2020-06": 222885.02,
+          "2019-12": 161108.8,
+          "2019-09": 117772.67,
+          "2022-08": 118317.01,
+          "2019-01": 136800.25,
+          "2021-11": 227657.3,
+          "2022-07": 137284.98,
+          "2021-09": 229961.22,
+          "2020-11": 226147.61,
+          "2022-12": 61652.69,
+          "2021-03": 216279.92,
+          "2020-04": 212784.8,
+          "2022-10": 53970.74,
+          "2022-03": 152187.13,
+          "2019-05": 87645.35,
+          "2020-10": 183014.34,
+          "2019-07": 99799.01,
+          "2022-04": 143418.77,
+          "2021-05": 191868.82,
+          "2021-01": 254611.41,
+          "2021-02": 184332.74,
+          "2019-03": 89731.5,
+          "2019-02": 89581.41,
+          "2020-03": 170718.71,
+          "2020-01": 142172.31,
+          "2020-05": 235531.64,
+          "2021-04": 198077.23,
+          "2020-02": 118188.67,
+          "2022-02": 133714.69,
+          "2020-09": 265959.89,
+          "2020-08": 241727.68,
+          "2021-07": 195134.62,
+          "2019-04": 85908.11,
+          "2022-06": 118808.33,
+          "2022-05": 140724.06,
+          "2021-06": 172863.21,
+          "2019-06": 79687.29,
+          "2019-10": 93259.74,
+          "2021-08": 215318.62,
+          "2022-11": 60577.73
+        },
+        "Samsung Webcam": {
+          "2020-09": 11811.47,
+          "2021-09": 15860.3,
+          "2021-12": 22007.09,
+          "2022-01": 18642.26,
+          "2020-11": 12708.28,
+          "2022-08": 11367.06,
+          "2021-11": 15710.05,
+          "2022-06": 10985.52,
+          "2021-05": 11346.19,
+          "2020-04": 3277.59,
+          "2021-10": 11682.64,
+          "2021-07": 12652.48,
+          "2021-03": 12714.96,
+          "2022-10": 2283.95,
+          "2021-04": 14131.09,
+          "2021-01": 17251.6,
+          "2021-02": 12169.85,
+          "2020-10": 9993.22,
+          "2021-08": 15155.45,
+          "2022-03": 11937.93,
+          "2020-07": 4036.25,
+          "2022-04": 12624.38,
+          "2022-07": 11304.24,
+          "2022-02": 13199.75,
+          "2022-05": 13587.88,
+          "2021-06": 10211.81,
+          "2020-12": 15503.58,
+          "2020-03": 1484.31,
+          "2022-12": 3728.21,
+          "2020-05": 3936.76,
+          "2020-06": 3475.23,
+          "2022-09": 5548.48,
+          "2020-08": 6353.6,
+          "2022-11": 2697.7,
+          "2020-02": 466.62,
+          "2020-01": 49.98
+        },
+        "Samsung Charging Cable Pack": {
+          "2020-08": 9948.75,
+          "2021-09": 12497.62,
+          "2020-07": 11121.0,
+          "2020-12": 13633.24,
+          "2020-01": 8194.03,
+          "2021-12": 13348.3,
+          "2019-09": 8723.42,
+          "2019-08": 7208.32,
+          "2021-08": 10101.78,
+          "2022-05": 8509.52,
+          "2019-01": 10294.53,
+          "2020-04": 12022.76,
+          "2022-02": 6641.31,
+          "2021-07": 12267.72,
+          "2019-10": 6559.74,
+          "2021-01": 12048.84,
+          "2021-11": 10929.45,
+          "2020-02": 7568.18,
+          "2022-03": 8362.17,
+          "2021-03": 11063.82,
+          "2022-11": 3437.78,
+          "2019-05": 7282.6,
+          "2022-08": 6822.17,
+          "2022-12": 4767.01,
+          "2022-04": 7670.33,
+          "2019-12": 10517.8,
+          "2020-09": 13125.29,
+          "2022-01": 10871.82,
+          "2021-05": 10688.29,
+          "2020-11": 11154.07,
+          "2019-11": 8042.84,
+          "2020-03": 10945.81,
+          "2019-03": 8727.68,
+          "2021-10": 9182.39,
+          "2022-06": 7672.24,
+          "2021-06": 10385.94,
+          "2021-02": 8515.05,
+          "2019-07": 8136.14,
+          "2022-07": 7438.33,
+          "2020-06": 11161.42,
+          "2019-06": 6644.01,
+          "2021-04": 12478.0,
+          "2020-10": 9749.95,
+          "2022-09": 5245.34,
+          "2019-04": 7779.99,
+          "2020-05": 12464.7,
+          "2019-02": 6864.9,
+          "2022-10": 3589.62
+        },
+        "Macbook Air Laptop": {
+          "2019-01": 64854.27,
+          "2020-12": 334701.24,
+          "2020-09": 321619.34,
+          "2020-06": 228590.25,
+          "2020-08": 307648.69,
+          "2020-07": 237103.26,
+          "2020-04": 252801.19,
+          "2022-11": 24937.55,
+          "2021-12": 206335.65,
+          "2022-12": 32308.69,
+          "2021-08": 112638.04,
+          "2020-03": 217572.71,
+          "2022-08": 50123.47,
+          "2021-10": 144551.1,
+          "2021-11": 162931.23,
+          "2020-05": 232939.4,
+          "2020-10": 291728.19,
+          "2022-03": 90676.06,
+          "2022-05": 84495.02,
+          "2020-11": 283010.88,
+          "2021-03": 157668.81,
+          "2021-01": 278342.02,
+          "2020-01": 94135.04,
+          "2022-01": 162050.57,
+          "2021-06": 117823.08,
+          "2022-02": 99917.65,
+          "2022-07": 72800.58,
+          "2021-05": 146681.8,
+          "2022-04": 77030.45,
+          "2021-04": 138465.4,
+          "2021-07": 117427.44,
+          "2020-02": 131149.33,
+          "2021-09": 147224.85,
+          "2019-05": 58875.37,
+          "2019-08": 45232.76,
+          "2022-06": 60930.17,
+          "2021-02": 169732.48,
+          "2019-07": 55617.36,
+          "2022-09": 67659.07,
+          "2019-11": 54924.19,
+          "2019-09": 47744.22,
+          "2019-06": 43194.69,
+          "2019-12": 66929.1,
+          "2019-04": 39284.68,
+          "2019-03": 46947.18,
+          "2019-10": 48023.02,
+          "2022-10": 29318.05,
+          "2019-02": 35123.98
+        },
+        "Apple Iphone": {
+          "2020-08": 7965.41,
+          "2020-07": 5947.72,
+          "2020-10": 3795.53,
+          "2020-06": 4039.34,
+          "2021-11": 3058.81,
+          "2020-03": 9018.44,
+          "2019-03": 3830.4,
+          "2020-12": 15888.39,
+          "2020-05": 11928.86,
+          "2021-10": 6608.78,
+          "2022-05": 1454.24,
+          "2020-11": 8621.25,
+          "2021-09": 3618.16,
+          "2022-12": 1557.83,
+          "2019-07": 2277.2,
+          "2022-04": 3672.9,
+          "2021-02": 6542.78,
+          "2019-08": 648.22,
+          "2022-03": 6058.55,
+          "2021-05": 4527.46,
+          "2022-01": 3479.96,
+          "2022-02": 2768.66,
+          "2020-09": 14893.66,
+          "2022-11": 1596.0,
+          "2021-04": 3459.08,
+          "2020-04": 3817.47,
+          "2019-04": 2920.04,
+          "2019-12": 3103.86,
+          "2021-12": 4999.83,
+          "2022-07": 4045.5,
+          "2019-05": 2007.26,
+          "2022-06": 3053.44,
+          "2021-08": 9812.16,
+          "2019-06": 1581.28,
+          "2021-03": 5135.35,
+          "2020-02": 4620.0,
+          "2019-01": 6592.04,
+          "2021-01": 3192.0,
+          "2022-09": 1596.0,
+          "2019-02": 2261.76,
+          "2021-06": 1533.94,
+          "2019-10": 2851.06,
+          "2021-07": 4086.79,
+          "2019-11": 2159.44,
+          "2019-09": 3867.37,
+          "2022-08": 1260.0,
+          "2020-01": 1573.37
+        },
+        "Bose Soundsport Headphones": {
+          "2020-08": 385.73,
+          "2021-03": 119.98,
+          "2020-03": 227.57,
+          "2021-05": 119.98,
+          "2020-11": 153.22,
+          "2021-07": 239.96,
+          "2020-05": 227.57,
+          "2020-04": 352.79,
+          "2020-06": 119.98,
+          "2021-04": 125.25,
+          "2020-09": 119.98,
+          "2020-12": 306.7,
+          "2021-11": 274.07,
+          "2021-08": 119.98,
+          "2020-02": 104.34,
+          "2021-10": 119.98,
+          "2022-11": 101.98,
+          "2020-10": 119.98
+        }
+      },
+      "regional_sales": [
+        {
+          "region": "NA",
+          "revenue": 13292005.37,
+          "orders": 52734
+        },
+        {
+          "region": "EMEA",
+          "revenue": 7653097.69,
+          "orders": 30265
+        },
+        {
+          "region": "LATAM",
+          "revenue": 1547258.7,
+          "orders": 6946
+        },
+        {
+          "region": "APAC",
+          "revenue": 3368719.27,
+          "orders": 12448
+        },
+        {
+          "region": "UNK",
+          "revenue": 10218.03,
+          "orders": 139
+        }
+      ],
+      "country_sales": [
+        {
+          "country": "United States",
+          "revenue": 12168344.74,
+          "orders": 47985,
+          "region": "NA"
+        },
+        {
+          "country": "United Kingdom",
+          "revenue": 1871167.54,
+          "orders": 7745,
+          "region": "EMEA"
+        },
+        {
+          "country": "Canada",
+          "revenue": 1048443.82,
+          "orders": 4438,
+          "region": "NA"
+        },
+        {
+          "country": "Japan",
+          "revenue": 984031.6,
+          "orders": 2539,
+          "region": "APAC"
+        },
+        {
+          "country": "Germany",
+          "revenue": 932570.55,
+          "orders": 3545,
+          "region": "EMEA"
+        },
+        {
+          "country": "Australia",
+          "revenue": 901127.5,
+          "orders": 4567,
+          "region": "APAC"
+        },
+        {
+          "country": "Brazil",
+          "revenue": 666589.9,
+          "orders": 2772,
+          "region": "LATAM"
+        },
+        {
+          "country": "France",
+          "revenue": 607435.53,
+          "orders": 2479,
+          "region": "EMEA"
+        },
+        {
+          "country": "Spain",
+          "revenue": 441709.65,
+          "orders": 2025,
+          "region": "EMEA"
+        },
+        {
+          "country": "Netherlands",
+          "revenue": 431872.07,
+          "orders": 1542,
+          "region": "EMEA"
+        },
+        {
+          "country": "Italy",
+          "revenue": 347893.25,
+          "orders": 1445,
+          "region": "EMEA"
+        },
+        {
+          "country": "India",
+          "revenue": 301064.97,
+          "orders": 1078,
+          "region": "APAC"
+        },
+        {
+          "country": "South Korea",
+          "revenue": 290854.59,
+          "orders": 918,
+          "region": "APAC"
+        },
+        {
+          "country": "Switzerland",
+          "revenue": 266641.75,
+          "orders": 978,
+          "region": "EMEA"
+        },
+        {
+          "country": "Mexico",
+          "revenue": 264236.68,
+          "orders": 1587,
+          "region": "LATAM"
+        },
+        {
+          "country": "Sweden",
+          "revenue": 232769.58,
+          "orders": 772,
+          "region": "EMEA"
+        },
+        {
+          "country": "Israel",
+          "revenue": 200351.17,
+          "orders": 679,
+          "region": "EMEA"
+        },
+        {
+          "country": "Denmark",
+          "revenue": 199955.21,
+          "orders": 577,
+          "region": "EMEA"
+        },
+        {
+          "country": "Norway",
+          "revenue": 196726.64,
+          "orders": 636,
+          "region": "EMEA"
+        },
+        {
+          "country": "New Zealand",
+          "revenue": 179752.79,
+          "orders": 676,
+          "region": "APAC"
+        },
+        {
+          "country": "Belgium",
+          "revenue": 174482.9,
+          "orders": 641,
+          "region": "EMEA"
+        },
+        {
+          "country": "Poland",
+          "revenue": 151972.67,
+          "orders": 613,
+          "region": "EMEA"
+        },
+        {
+          "country": "Ireland",
+          "revenue": 145257.33,
+          "orders": 742,
+          "region": "EMEA"
+        },
+        {
+          "country": "Chile",
+          "revenue": 144998.83,
+          "orders": 713,
+          "region": "LATAM"
+        },
+        {
+          "country": "Austria",
+          "revenue": 144863.55,
+          "orders": 505,
+          "region": "EMEA"
+        },
+        {
+          "country": "Colombia",
+          "revenue": 136365.44,
+          "orders": 436,
+          "region": "LATAM"
+        },
+        {
+          "country": "Russia",
+          "revenue": 128029.5,
+          "orders": 597,
+          "region": "APAC"
+        },
+        {
+          "country": "Finland",
+          "revenue": 111202.61,
+          "orders": 334,
+          "region": "EMEA"
+        },
+        {
+          "country": "South Africa",
+          "revenue": 108879.32,
+          "orders": 386,
+          "region": "EMEA"
+        },
+        {
+          "country": "Singapore",
+          "revenue": 104948.29,
+          "orders": 387,
+          "region": "APAC"
+        },
+        {
+          "country": "Argentina",
+          "revenue": 103334.7,
+          "orders": 477,
+          "region": "LATAM"
+        },
+        {
+          "country": "Hong Kong",
+          "revenue": 95770.43,
+          "orders": 345,
+          "region": "APAC"
+        },
+        {
+          "country": "Portugal",
+          "revenue": 90433.72,
+          "orders": 405,
+          "region": "EMEA"
+        },
+        {
+          "country": "Peru",
+          "revenue": 88586.13,
+          "orders": 320,
+          "region": "LATAM"
+        },
+        {
+          "country": "United Arab Emirates",
+          "revenue": 83168.25,
+          "orders": 345,
+          "region": "EMEA"
+        },
+        {
+          "country": "Thailand",
+          "revenue": 82063.99,
+          "orders": 278,
+          "region": "APAC"
+        },
+        {
+          "country": "Czech Republic",
+          "revenue": 74539.6,
+          "orders": 250,
+          "region": "EMEA"
+        },
+        {
+          "country": "Romania",
+          "revenue": 64144.13,
+          "orders": 203,
+          "region": "EMEA"
+        },
+        {
+          "country": "Philippines",
+          "revenue": 62791.21,
+          "orders": 234,
+          "region": "APAC"
+        },
+        {
+          "country": "Turkey",
+          "revenue": 61650.76,
+          "orders": 618,
+          "region": "EMEA"
+        },
+        {
+          "country": "Taiwan",
+          "revenue": 59760.54,
+          "orders": 184,
+          "region": "APAC"
+        },
+        {
+          "country": "Hungary",
+          "revenue": 58227.91,
+          "orders": 202,
+          "region": "EMEA"
+        },
+        {
+          "country": "Greece",
+          "revenue": 56076.06,
+          "orders": 242,
+          "region": "EMEA"
+        },
+        {
+          "country": "Egypt",
+          "revenue": 55640.7,
+          "orders": 222,
+          "region": "EMEA"
+        },
+        {
+          "country": "Ukraine",
+          "revenue": 55326.23,
+          "orders": 232,
+          "region": "EMEA"
+        },
+        {
+          "country": "Malaysia",
+          "revenue": 43899.56,
+          "orders": 167,
+          "region": "APAC"
+        },
+        {
+          "country": "Nigeria",
+          "revenue": 41844.86,
+          "orders": 188,
+          "region": "EMEA"
+        },
+        {
+          "country": "Puerto Rico",
+          "revenue": 38598.52,
+          "orders": 150,
+          "region": "NA"
+        },
+        {
+          "country": "Slovakia",
+          "revenue": 37684.99,
+          "orders": 108,
+          "region": "EMEA"
+        },
+        {
+          "country": "Saudi Arabia",
+          "revenue": 34366.39,
+          "orders": 136,
+          "region": "EMEA"
+        },
+        {
+          "country": "Vietnam",
+          "revenue": 32914.97,
+          "orders": 114,
+          "region": "APAC"
+        },
+        {
+          "country": "Ecuador",
+          "revenue": 25441.85,
+          "orders": 104,
+          "region": "LATAM"
+        },
+        {
+          "country": "Croatia",
+          "revenue": 24579.26,
+          "orders": 67,
+          "region": "EMEA"
+        },
+        {
+          "country": "Costa Rica",
+          "revenue": 24464.54,
+          "orders": 109,
+          "region": "LATAM"
+        },
+        {
+          "country": "Slovenia",
+          "revenue": 22932.62,
+          "orders": 77,
+          "region": "EMEA"
+        },
+        {
+          "country": "Iceland",
+          "revenue": 21965.15,
+          "orders": 91,
+          "region": "EMEA"
+        },
+        {
+          "country": "Estonia",
+          "revenue": 21020.36,
+          "orders": 79,
+          "region": "EMEA"
+        },
+        {
+          "country": "Panama",
+          "revenue": 18106.16,
+          "orders": 72,
+          "region": "LATAM"
+        },
+        {
+          "country": "Bangladesh",
+          "revenue": 17646.28,
+          "orders": 46,
+          "region": "APAC"
+        },
+        {
+          "country": "Lithuania",
+          "revenue": 17431.9,
+          "orders": 73,
+          "region": "EMEA"
+        },
+        {
+          "country": "Sri Lanka",
+          "revenue": 16091.68,
+          "orders": 65,
+          "region": "APAC"
+        },
+        {
+          "country": "Kuwait",
+          "revenue": 15603.96,
+          "orders": 57,
+          "region": "EMEA"
+        },
+        {
+          "country": "Pakistan",
+          "revenue": 15436.35,
+          "orders": 52,
+          "region": "APAC"
+        },
+        {
+          "country": "Serbia",
+          "revenue": 14375.13,
+          "orders": 54,
+          "region": "EMEA"
+        },
+        {
+          "country": "Dominican Republic",
+          "revenue": 13574.01,
+          "orders": 52,
+          "region": "LATAM"
+        },
+        {
+          "country": "Uruguay",
+          "revenue": 12859.4,
+          "orders": 84,
+          "region": "LATAM"
+        },
+        {
+          "country": "Morocco",
+          "revenue": 11303.37,
+          "orders": 51,
+          "region": "EMEA"
+        },
+        {
+          "country": "Bulgaria",
+          "revenue": 11123.5,
+          "orders": 50,
+          "region": "EMEA"
+        },
+        {
+          "country": "Kenya",
+          "revenue": 11084.83,
+          "orders": 46,
+          "region": "EMEA"
+        },
+        {
+          "country": "Ghana",
+          "revenue": 10420.57,
+          "orders": 34,
+          "region": "EMEA"
+        },
+        {
+          "country": "Cyprus",
+          "revenue": 10202.06,
+          "orders": 45,
+          "region": "EMEA"
+        },
+        {
+          "country": "Kazakhstan",
+          "revenue": 10094.83,
+          "orders": 44,
+          "region": "EMEA"
+        },
+        {
+          "country": "Latvia",
+          "revenue": 9830.41,
+          "orders": 39,
+          "region": "EMEA"
+        },
+        {
+          "country": "Lebanon",
+          "revenue": 9762.34,
+          "orders": 39,
+          "region": "EMEA"
+        },
+        {
+          "country": "#N/A",
+          "revenue": 9688.45,
+          "orders": 135,
+          "region": "UNK"
+        },
+        {
+          "country": "Luxembourg",
+          "revenue": 9282.36,
+          "orders": 33,
+          "region": "EMEA"
+        },
+        {
+          "country": "Jamaica",
+          "revenue": 9172.58,
+          "orders": 37,
+          "region": "NA"
+        },
+        {
+          "country": "Venezuela",
+          "revenue": 8874.91,
+          "orders": 35,
+          "region": "LATAM"
+        },
+        {
+          "country": "Qatar",
+          "revenue": 8811.83,
+          "orders": 51,
+          "region": "EMEA"
+        },
+        {
+          "country": "Malta",
+          "revenue": 7946.36,
+          "orders": 40,
+          "region": "EMEA"
+        },
+        {
+          "country": "Guatemala",
+          "revenue": 7663.48,
+          "orders": 34,
+          "region": "LATAM"
+        },
+        {
+          "country": "Honduras",
+          "revenue": 7488.5,
+          "orders": 28,
+          "region": "LATAM"
+        },
+        {
+          "country": "Azerbaijan",
+          "revenue": 7313.6,
+          "orders": 21,
+          "region": "EMEA"
+        },
+        {
+          "country": "Bolivia",
+          "revenue": 7158.82,
+          "orders": 33,
+          "region": "LATAM"
+        },
+        {
+          "country": "Cambodia",
+          "revenue": 7121.47,
+          "orders": 20,
+          "region": "APAC"
+        },
+        {
+          "country": "North Macedonia",
+          "revenue": 6886.9,
+          "orders": 14,
+          "region": "EMEA"
+        },
+        {
+          "country": "Oman",
+          "revenue": 6164.24,
+          "orders": 17,
+          "region": "EMEA"
+        },
+        {
+          "country": "European Union",
+          "revenue": 5953.46,
+          "orders": 11,
+          "region": "EMEA"
+        },
+        {
+          "country": "Tanzania",
+          "revenue": 5607.56,
+          "orders": 19,
+          "region": "EMEA"
+        },
+        {
+          "country": "R\u00e9union",
+          "revenue": 5539.28,
+          "orders": 21,
+          "region": "EMEA"
+        },
+        {
+          "country": "Papua New Guinea",
+          "revenue": 5253.71,
+          "orders": 11,
+          "region": "APAC"
+        },
+        {
+          "country": "El Salvador",
+          "revenue": 5126.64,
+          "orders": 20,
+          "region": "LATAM"
+        },
+        {
+          "country": "Jordan",
+          "revenue": 4960.06,
+          "orders": 27,
+          "region": "EMEA"
+        },
+        {
+          "country": "Bahamas",
+          "revenue": 4865.82,
+          "orders": 20,
+          "region": "NA"
+        },
+        {
+          "country": "Uganda",
+          "revenue": 4826.44,
+          "orders": 14,
+          "region": "EMEA"
+        },
+        {
+          "country": "Belarus",
+          "revenue": 4507.2,
+          "orders": 29,
+          "region": "EMEA"
+        },
+        {
+          "country": "Vanuatu",
+          "revenue": 4448.72,
+          "orders": 3,
+          "region": "APAC"
+        },
+        {
+          "country": "Georgia",
+          "revenue": 4297.45,
+          "orders": 15,
+          "region": "EMEA"
+        },
+        {
+          "country": "Iraq",
+          "revenue": 4071.04,
+          "orders": 20,
+          "region": "EMEA"
+        },
+        {
+          "country": "Indonesia",
+          "revenue": 4050.55,
+          "orders": 24,
+          "region": "APAC"
+        },
+        {
+          "country": "China",
+          "revenue": 3969.33,
+          "orders": 19,
+          "region": "APAC"
+        },
+        {
+          "country": "Paraguay",
+          "revenue": 3826.32,
+          "orders": 28,
+          "region": "LATAM"
+        },
+        {
+          "country": "C\u00f4te d'Ivoire (Ivory Coast)",
+          "revenue": 3759.9,
+          "orders": 15,
+          "region": "EMEA"
+        },
+        {
+          "country": "Zimbabwe",
+          "revenue": 3711.0,
+          "orders": 16,
+          "region": "EMEA"
+        },
+        {
+          "country": "Barbados",
+          "revenue": 3646.0,
+          "orders": 9,
+          "region": "NA"
+        },
+        {
+          "country": "Myanmar (Burma)",
+          "revenue": 3644.44,
+          "orders": 16,
+          "region": "APAC"
+        },
+        {
+          "country": "Tunisia",
+          "revenue": 3615.52,
+          "orders": 21,
+          "region": "EMEA"
+        },
+        {
+          "country": "Palestine",
+          "revenue": 3492.22,
+          "orders": 10,
+          "region": "EMEA"
+        },
+        {
+          "country": "Nepal",
+          "revenue": 3414.0,
+          "orders": 8,
+          "region": "APAC"
+        },
+        {
+          "country": "Cameroon",
+          "revenue": 3265.92,
+          "orders": 16,
+          "region": "EMEA"
+        },
+        {
+          "country": "Trinidad and Tobago",
+          "revenue": 3184.94,
+          "orders": 26,
+          "region": "NA"
+        },
+        {
+          "country": "Albania",
+          "revenue": 3165.07,
+          "orders": 20,
+          "region": "EMEA"
+        },
+        {
+          "country": "Benin",
+          "revenue": 2924.0,
+          "orders": 6,
+          "region": "EMEA"
+        },
+        {
+          "country": "Uzbekistan",
+          "revenue": 2793.44,
+          "orders": 6,
+          "region": "APAC"
+        },
+        {
+          "country": "French Polynesia",
+          "revenue": 2789.41,
+          "orders": 6,
+          "region": "APAC"
+        },
+        {
+          "country": "Martinique",
+          "revenue": 2718.36,
+          "orders": 12,
+          "region": "NA"
+        },
+        {
+          "country": "Guadeloupe",
+          "revenue": 2662.2,
+          "orders": 11,
+          "region": "NA"
+        },
+        {
+          "country": "Namibia",
+          "revenue": 2655.96,
+          "orders": 10,
+          "region": "EMEA"
+        },
+        {
+          "country": "Mauritius",
+          "revenue": 2631.55,
+          "orders": 13,
+          "region": "EMEA"
+        },
+        {
+          "country": "Andorra",
+          "revenue": 2621.38,
+          "orders": 7,
+          "region": "EMEA"
+        },
+        {
+          "country": "Nicaragua",
+          "revenue": 2567.24,
+          "orders": 23,
+          "region": "LATAM"
+        },
+        {
+          "country": "Zambia",
+          "revenue": 2459.25,
+          "orders": 9,
+          "region": "EMEA"
+        },
+        {
+          "country": "Somalia",
+          "revenue": 2376.0,
+          "orders": 13,
+          "region": "EMEA"
+        },
+        {
+          "country": "Bosnia and Herzegovina",
+          "revenue": 2347.6,
+          "orders": 13,
+          "region": "EMEA"
+        },
+        {
+          "country": "Macau",
+          "revenue": 2317.88,
+          "orders": 12,
+          "region": "APAC"
+        },
+        {
+          "country": "Jersey",
+          "revenue": 2286.92,
+          "orders": 14,
+          "region": "EMEA"
+        },
+        {
+          "country": "Isle of Man",
+          "revenue": 2280.76,
+          "orders": 7,
+          "region": "EMEA"
+        },
+        {
+          "country": "Mozambique",
+          "revenue": 2208.0,
+          "orders": 8,
+          "region": "EMEA"
+        },
+        {
+          "country": "Senegal",
+          "revenue": 2035.01,
+          "orders": 7,
+          "region": "EMEA"
+        },
+        {
+          "country": "Moldova",
+          "revenue": 1985.89,
+          "orders": 12,
+          "region": "EMEA"
+        },
+        {
+          "country": "Greenland",
+          "revenue": 1969.04,
+          "orders": 13,
+          "region": "NA"
+        },
+        {
+          "country": "Bermuda",
+          "revenue": 1839.96,
+          "orders": 7,
+          "region": "LATAM"
+        },
+        {
+          "country": "Monaco",
+          "revenue": 1832.64,
+          "orders": 8,
+          "region": "EMEA"
+        },
+        {
+          "country": "U.S. Virgin Islands",
+          "revenue": 1806.14,
+          "orders": 7,
+          "region": "NA"
+        },
+        {
+          "country": "British Virgin Islands",
+          "revenue": 1800.0,
+          "orders": 1,
+          "region": "NA"
+        },
+        {
+          "country": "Algeria",
+          "revenue": 1790.85,
+          "orders": 7,
+          "region": "EMEA"
+        },
+        {
+          "country": "Guyana",
+          "revenue": 1776.0,
+          "orders": 5,
+          "region": "LATAM"
+        },
+        {
+          "country": "Armenia",
+          "revenue": 1674.22,
+          "orders": 8,
+          "region": "APAC"
+        },
+        {
+          "country": "Northern Mariana Islands",
+          "revenue": 1586.0,
+          "orders": 4,
+          "region": "APAC"
+        },
+        {
+          "country": "Mongolia",
+          "revenue": 1543.0,
+          "orders": 10,
+          "region": "APAC"
+        },
+        {
+          "country": "Democratic Republic of the Congo",
+          "revenue": 1506.56,
+          "orders": 8,
+          "region": "EMEA"
+        },
+        {
+          "country": "Guinea",
+          "revenue": 1440.0,
+          "orders": 3,
+          "region": "EMEA"
+        },
+        {
+          "country": "Turks and Caicos Islands",
+          "revenue": 1366.0,
+          "orders": 2,
+          "region": "NA"
+        },
+        {
+          "country": "Kyrgyzstan",
+          "revenue": 1320.0,
+          "orders": 6,
+          "region": "APAC"
+        },
+        {
+          "country": "Guam",
+          "revenue": 1285.86,
+          "orders": 12,
+          "region": "APAC"
+        },
+        {
+          "country": "French Guiana",
+          "revenue": 1198.0,
+          "orders": 1,
+          "region": "LATAM"
+        },
+        {
+          "country": "Cape Verde",
+          "revenue": 1198.0,
+          "orders": 1,
+          "region": "EMEA"
+        },
+        {
+          "country": "Haiti",
+          "revenue": 1157.6,
+          "orders": 5,
+          "region": "LATAM"
+        },
+        {
+          "country": "Seychelles",
+          "revenue": 1152.0,
+          "orders": 5,
+          "region": "EMEA"
+        },
+        {
+          "country": "Mali",
+          "revenue": 1003.8,
+          "orders": 3,
+          "region": "EMEA"
+        },
+        {
+          "country": "Belize",
+          "revenue": 984.0,
+          "orders": 4,
+          "region": "NA"
+        },
+        {
+          "country": "Fiji",
+          "revenue": 984.0,
+          "orders": 4,
+          "region": "APAC"
+        },
+        {
+          "country": "Burkina Faso",
+          "revenue": 972.74,
+          "orders": 4,
+          "region": "EMEA"
+        },
+        {
+          "country": "Maldives",
+          "revenue": 853.1,
+          "orders": 5,
+          "region": "APAC"
+        },
+        {
+          "country": "New Caledonia",
+          "revenue": 831.3,
+          "orders": 4,
+          "region": "APAC"
+        },
+        {
+          "country": "Sint Maarten",
+          "revenue": 718.0,
+          "orders": 1,
+          "region": "NA"
+        },
+        {
+          "country": "Sierra Leone",
+          "revenue": 711.96,
+          "orders": 4,
+          "region": "EMEA"
+        },
+        {
+          "country": "Faroe Islands",
+          "revenue": 696.0,
+          "orders": 5,
+          "region": "EMEA"
+        },
+        {
+          "country": "Sudan",
+          "revenue": 670.84,
+          "orders": 2,
+          "region": "EMEA"
+        },
+        {
+          "country": "Guernsey",
+          "revenue": 667.49,
+          "orders": 3,
+          "region": "EMEA"
+        },
+        {
+          "country": "Montenegro",
+          "revenue": 585.72,
+          "orders": 7,
+          "region": "EMEA"
+        },
+        {
+          "country": "Anonymous Proxy",
+          "revenue": 529.58,
+          "orders": 4,
+          "region": "UNK"
+        },
+        {
+          "country": "Botswana",
+          "revenue": 504.0,
+          "orders": 2,
+          "region": "EMEA"
+        },
+        {
+          "country": "Bahrain",
+          "revenue": 498.08,
+          "orders": 7,
+          "region": "APAC"
+        },
+        {
+          "country": "Bhutan",
+          "revenue": 480.0,
+          "orders": 1,
+          "region": "APAC"
+        },
+        {
+          "country": "Cook Islands",
+          "revenue": 480.0,
+          "orders": 1,
+          "region": "APAC"
+        },
+        {
+          "country": "Yemen",
+          "revenue": 460.26,
+          "orders": 1,
+          "region": "EMEA"
+        },
+        {
+          "country": "Saint Kitts and Nevis",
+          "revenue": 384.34,
+          "orders": 1,
+          "region": "NA"
+        },
+        {
+          "country": "Iran",
+          "revenue": 349.92,
+          "orders": 2,
+          "region": "APAC"
+        },
+        {
+          "country": "Liechtenstein",
+          "revenue": 336.0,
+          "orders": 2,
+          "region": "EMEA"
+        },
+        {
+          "country": "Saint Vincent and the Grenadines",
+          "revenue": 336.0,
+          "orders": 2,
+          "region": "NA"
+        },
+        {
+          "country": "Cayman Islands",
+          "revenue": 241.98,
+          "orders": 3,
+          "region": "NA"
+        },
+        {
+          "country": "Marshall Islands",
+          "revenue": 240.52,
+          "orders": 2,
+          "region": "APAC"
+        },
+        {
+          "country": "Angola",
+          "revenue": 217.98,
+          "orders": 2,
+          "region": "EMEA"
+        },
+        {
+          "country": "Gibraltar",
+          "revenue": 211.44,
+          "orders": 2,
+          "region": "EMEA"
+        },
+        {
+          "country": "Cura\u00e7ao",
+          "revenue": 190.36,
+          "orders": 2,
+          "region": "NA"
+        },
+        {
+          "country": "Anguilla",
+          "revenue": 181.98,
+          "orders": 2,
+          "region": "NA"
+        },
+        {
+          "country": "\u00c5land Islands",
+          "revenue": 168.64,
+          "orders": 1,
+          "region": "EMEA"
+        },
+        {
+          "country": "Madagascar",
+          "revenue": 168.0,
+          "orders": 1,
+          "region": "EMEA"
+        },
+        {
+          "country": "Togo",
+          "revenue": 168.0,
+          "orders": 1,
+          "region": "EMEA"
+        },
+        {
+          "country": "American Samoa",
+          "revenue": 168.0,
+          "orders": 1,
+          "region": "APAC"
+        },
+        {
+          "country": "Bonaire, Sint Eustatius, and Saba",
+          "revenue": 164.69,
+          "orders": 1,
+          "region": "NA"
+        },
+        {
+          "country": "Timor-Leste",
+          "revenue": 145.3,
+          "orders": 1,
+          "region": "APAC"
+        },
+        {
+          "country": "Tajikistan",
+          "revenue": 119.75,
+          "orders": 1,
+          "region": "APAC"
+        },
+        {
+          "country": "Aruba",
+          "revenue": 116.2,
+          "orders": 3,
+          "region": "NA"
+        },
+        {
+          "country": "Brunei",
+          "revenue": 77.02,
+          "orders": 3,
+          "region": "APAC"
+        },
+        {
+          "country": "Grenada",
+          "revenue": 73.98,
+          "orders": 2,
+          "region": "NA"
+        },
+        {
+          "country": "Asia/Pacific Region",
+          "revenue": 72.0,
+          "orders": 3,
+          "region": "APAC"
+        },
+        {
+          "country": "Rwanda",
+          "revenue": 24.0,
+          "orders": 1,
+          "region": "EMEA"
+        },
+        {
+          "country": "Laos",
+          "revenue": 24.0,
+          "orders": 1,
+          "region": "APAC"
+        },
+        {
+          "country": "Cuba",
+          "revenue": 23.59,
+          "orders": 1,
+          "region": "LATAM"
+        },
+        {
+          "country": "Ethiopia",
+          "revenue": 21.85,
+          "orders": 1,
+          "region": "EMEA"
+        },
+        {
+          "country": "Saint Lucia",
+          "revenue": 21.7,
+          "orders": 1,
+          "region": "NA"
+        },
+        {
+          "country": "Mauritania",
+          "revenue": 13.98,
+          "orders": 1,
+          "region": "EMEA"
+        },
+        {
+          "country": "Antigua and Barbuda",
+          "revenue": 13.98,
+          "orders": 1,
+          "region": "NA"
+        }
+      ],
+      "seasonal_sales": [
+        {
+          "season": "Fall",
+          "revenue": 7018968.35,
+          "orders": 26304
+        },
+        {
+          "season": "Winter",
+          "revenue": 7312358.57,
+          "orders": 27984
+        },
+        {
+          "season": "Summer",
+          "revenue": 6891286.58,
+          "orders": 26761
+        },
+        {
+          "season": "Spring",
+          "revenue": 6883421.36,
+          "orders": 26860
+        }
+      ],
+      "loyalty_yearly_trend": {
+        "2019": {
+          "Non-member": {
+            "revenue": 3435851.99,
+            "orders": 14749,
+            "aov": 232.95
+          },
+          "Member": {
+            "revenue": 431647.59,
+            "orders": 2052,
+            "aov": 210.35
+          }
+        },
+        "2020": {
+          "Non-member": {
+            "revenue": 7053066.77,
+            "orders": 20506,
+            "aov": 343.95
+          },
+          "Member": {
+            "revenue": 3099994.22,
+            "orders": 13289,
+            "aov": 233.28
+          }
+        },
+        "2021": {
+          "Non-member": {
+            "revenue": 4019116.85,
+            "orders": 15698,
+            "aov": 256.03
+          },
+          "Member": {
+            "revenue": 5108777.59,
+            "orders": 20077,
+            "aov": 254.46
+          }
+        },
+        "2022": {
+          "Non-member": {
+            "revenue": 2057442.37,
+            "orders": 9981,
+            "aov": 206.14
+          },
+          "Member": {
+            "revenue": 2900137.48,
+            "orders": 11557,
+            "aov": 250.94
+          }
+        }
+      },
+      "loyalty_monthly_trend": {
+        "2019-01": {
+          "Non-member": {
+            "revenue": 349799.94,
+            "orders": 1616,
+            "aov": 216.46
+          },
+          "Member": {
+            "revenue": 12282.58,
+            "orders": 50,
+            "aov": 245.65
+          }
+        },
+        "2019-02": {
+          "Non-member": {
+            "revenue": 242110.76,
+            "orders": 1092,
+            "aov": 221.71
+          },
+          "Member": {
+            "revenue": 4727.97,
+            "orders": 30,
+            "aov": 157.6
+          }
+        },
+        "2019-03": {
+          "Non-member": {
+            "revenue": 266052.36,
+            "orders": 1186,
+            "aov": 224.33
+          },
+          "Member": {
+            "revenue": 8890.28,
+            "orders": 68,
+            "aov": 130.74
+          }
+        },
+        "2019-04": {
+          "Non-member": {
+            "revenue": 262120.26,
+            "orders": 1158,
+            "aov": 226.36
+          },
+          "Member": {
+            "revenue": 9554.76,
+            "orders": 70,
+            "aov": 136.5
+          }
+        },
+        "2019-05": {
+          "Non-member": {
+            "revenue": 265207.75,
+            "orders": 1097,
+            "aov": 241.76
+          },
+          "Member": {
+            "revenue": 12128.88,
+            "orders": 83,
+            "aov": 146.13
+          }
+        },
+        "2019-06": {
+          "Non-member": {
+            "revenue": 246005.07,
+            "orders": 1017,
+            "aov": 241.89
+          },
+          "Member": {
+            "revenue": 14476.31,
+            "orders": 85,
+            "aov": 170.31
+          }
+        },
+        "2019-07": {
+          "Non-member": {
+            "revenue": 291346.72,
+            "orders": 1211,
+            "aov": 240.58
+          },
+          "Member": {
+            "revenue": 26727.51,
+            "orders": 144,
+            "aov": 185.61
+          }
+        },
+        "2019-08": {
+          "Non-member": {
+            "revenue": 276676.8,
+            "orders": 1207,
+            "aov": 229.23
+          },
+          "Member": {
+            "revenue": 29980.19,
+            "orders": 161,
+            "aov": 186.21
+          }
+        },
+        "2019-09": {
+          "Non-member": {
+            "revenue": 322325.4,
+            "orders": 1352,
+            "aov": 238.41
+          },
+          "Member": {
+            "revenue": 50589.34,
+            "orders": 243,
+            "aov": 208.19
+          }
+        },
+        "2019-10": {
+          "Non-member": {
+            "revenue": 255067.47,
+            "orders": 1033,
+            "aov": 246.92
+          },
+          "Member": {
+            "revenue": 50087.98,
+            "orders": 225,
+            "aov": 222.61
+          }
+        },
+        "2019-11": {
+          "Non-member": {
+            "revenue": 320047.88,
+            "orders": 1312,
+            "aov": 243.94
+          },
+          "Member": {
+            "revenue": 92939.82,
+            "orders": 368,
+            "aov": 252.55
+          }
+        },
+        "2019-12": {
+          "Non-member": {
+            "revenue": 339091.58,
+            "orders": 1468,
+            "aov": 230.99
+          },
+          "Member": {
+            "revenue": 119261.97,
+            "orders": 525,
+            "aov": 227.17
+          }
+        },
+        "2020-01": {
+          "Non-member": {
+            "revenue": 362867.16,
+            "orders": 1323,
+            "aov": 274.28
+          },
+          "Member": {
+            "revenue": 97141.97,
+            "orders": 451,
+            "aov": 215.39
+          }
+        },
+        "2020-02": {
+          "Non-member": {
+            "revenue": 383687.75,
+            "orders": 1222,
+            "aov": 313.98
+          },
+          "Member": {
+            "revenue": 95336.72,
+            "orders": 421,
+            "aov": 226.45
+          }
+        },
+        "2020-03": {
+          "Non-member": {
+            "revenue": 573604.55,
+            "orders": 1699,
+            "aov": 337.61
+          },
+          "Member": {
+            "revenue": 146453.34,
+            "orders": 698,
+            "aov": 209.82
+          }
+        },
+        "2020-04": {
+          "Non-member": {
+            "revenue": 627638.35,
+            "orders": 1908,
+            "aov": 328.95
+          },
+          "Member": {
+            "revenue": 213475.66,
+            "orders": 960,
+            "aov": 222.37
+          }
+        },
+        "2020-05": {
+          "Non-member": {
+            "revenue": 616488.83,
+            "orders": 1890,
+            "aov": 326.18
+          },
+          "Member": {
+            "revenue": 266917.19,
+            "orders": 1174,
+            "aov": 227.36
+          }
+        },
+        "2020-06": {
+          "Non-member": {
+            "revenue": 546536.42,
+            "orders": 1642,
+            "aov": 332.85
+          },
+          "Member": {
+            "revenue": 261042.42,
+            "orders": 1164,
+            "aov": 224.26
+          }
+        },
+        "2020-07": {
+          "Non-member": {
+            "revenue": 570056.81,
+            "orders": 1690,
+            "aov": 337.31
+          },
+          "Member": {
+            "revenue": 286445.63,
+            "orders": 1205,
+            "aov": 237.71
+          }
+        },
+        "2020-08": {
+          "Non-member": {
+            "revenue": 654270.87,
+            "orders": 1777,
+            "aov": 368.19
+          },
+          "Member": {
+            "revenue": 309608.16,
+            "orders": 1222,
+            "aov": 253.36
+          }
+        },
+        "2020-09": {
+          "Non-member": {
+            "revenue": 773157.62,
+            "orders": 2153,
+            "aov": 359.11
+          },
+          "Member": {
+            "revenue": 344528.29,
+            "orders": 1483,
+            "aov": 232.32
+          }
+        },
+        "2020-10": {
+          "Non-member": {
+            "revenue": 582517.88,
+            "orders": 1545,
+            "aov": 377.03
+          },
+          "Member": {
+            "revenue": 261729.75,
+            "orders": 1079,
+            "aov": 242.57
+          }
+        },
+        "2020-11": {
+          "Non-member": {
+            "revenue": 611860.66,
+            "orders": 1693,
+            "aov": 361.41
+          },
+          "Member": {
+            "revenue": 321688.09,
+            "orders": 1397,
+            "aov": 230.27
+          }
+        },
+        "2020-12": {
+          "Non-member": {
+            "revenue": 750379.87,
+            "orders": 1964,
+            "aov": 382.07
+          },
+          "Member": {
+            "revenue": 495627.0,
+            "orders": 2035,
+            "aov": 243.55
+          }
+        },
+        "2021-01": {
+          "Non-member": {
+            "revenue": 579318.72,
+            "orders": 1584,
+            "aov": 365.73
+          },
+          "Member": {
+            "revenue": 450271.84,
+            "orders": 1927,
+            "aov": 233.66
+          }
+        },
+        "2021-02": {
+          "Non-member": {
+            "revenue": 352702.14,
+            "orders": 1062,
+            "aov": 332.11
+          },
+          "Member": {
+            "revenue": 355540.18,
+            "orders": 1460,
+            "aov": 243.52
+          }
+        },
+        "2021-03": {
+          "Non-member": {
+            "revenue": 363891.44,
+            "orders": 1254,
+            "aov": 290.18
+          },
+          "Member": {
+            "revenue": 387423.68,
+            "orders": 1685,
+            "aov": 229.93
+          }
+        },
+        "2021-04": {
+          "Non-member": {
+            "revenue": 331467.21,
+            "orders": 1231,
+            "aov": 269.27
+          },
+          "Member": {
+            "revenue": 369379.38,
+            "orders": 1570,
+            "aov": 235.27
+          }
+        },
+        "2021-05": {
+          "Non-member": {
+            "revenue": 312990.51,
+            "orders": 1194,
+            "aov": 262.14
+          },
+          "Member": {
+            "revenue": 394931.51,
+            "orders": 1560,
+            "aov": 253.16
+          }
+        },
+        "2021-06": {
+          "Non-member": {
+            "revenue": 278864.77,
+            "orders": 1121,
+            "aov": 248.76
+          },
+          "Member": {
+            "revenue": 361511.06,
+            "orders": 1420,
+            "aov": 254.59
+          }
+        },
+        "2021-07": {
+          "Non-member": {
+            "revenue": 276209.13,
+            "orders": 1309,
+            "aov": 211.01
+          },
+          "Member": {
+            "revenue": 418359.39,
+            "orders": 1590,
+            "aov": 263.12
+          }
+        },
+        "2021-08": {
+          "Non-member": {
+            "revenue": 288624.81,
+            "orders": 1263,
+            "aov": 228.52
+          },
+          "Member": {
+            "revenue": 476212.72,
+            "orders": 1772,
+            "aov": 268.74
+          }
+        },
+        "2021-09": {
+          "Non-member": {
+            "revenue": 343402.59,
+            "orders": 1542,
+            "aov": 222.7
+          },
+          "Member": {
+            "revenue": 506194.4,
+            "orders": 1881,
+            "aov": 269.11
+          }
+        },
+        "2021-10": {
+          "Non-member": {
+            "revenue": 257699.7,
+            "orders": 1115,
+            "aov": 231.12
+          },
+          "Member": {
+            "revenue": 373898.16,
+            "orders": 1379,
+            "aov": 271.14
+          }
+        },
+        "2021-11": {
+          "Non-member": {
+            "revenue": 289575.02,
+            "orders": 1424,
+            "aov": 203.35
+          },
+          "Member": {
+            "revenue": 477056.1,
+            "orders": 1788,
+            "aov": 266.81
+          }
+        },
+        "2021-12": {
+          "Non-member": {
+            "revenue": 344370.81,
+            "orders": 1599,
+            "aov": 215.37
+          },
+          "Member": {
+            "revenue": 537999.17,
+            "orders": 2045,
+            "aov": 263.08
+          }
+        },
+        "2022-01": {
+          "Non-member": {
+            "revenue": 280701.95,
+            "orders": 1317,
+            "aov": 213.14
+          },
+          "Member": {
+            "revenue": 424285.34,
+            "orders": 1684,
+            "aov": 251.95
+          }
+        },
+        "2022-02": {
+          "Non-member": {
+            "revenue": 184210.74,
+            "orders": 834,
+            "aov": 220.88
+          },
+          "Member": {
+            "revenue": 288297.31,
+            "orders": 1155,
+            "aov": 249.61
+          }
+        },
+        "2022-03": {
+          "Non-member": {
+            "revenue": 180351.63,
+            "orders": 889,
+            "aov": 202.87
+          },
+          "Member": {
+            "revenue": 328788.09,
+            "orders": 1294,
+            "aov": 254.09
+          }
+        },
+        "2022-04": {
+          "Non-member": {
+            "revenue": 163609.67,
+            "orders": 819,
+            "aov": 199.77
+          },
+          "Member": {
+            "revenue": 311003.8,
+            "orders": 1248,
+            "aov": 249.2
+          }
+        },
+        "2022-05": {
+          "Non-member": {
+            "revenue": 185085.69,
+            "orders": 953,
+            "aov": 194.21
+          },
+          "Member": {
+            "revenue": 285966.54,
+            "orders": 1172,
+            "aov": 244.0
+          }
+        },
+        "2022-06": {
+          "Non-member": {
+            "revenue": 157535.47,
+            "orders": 894,
+            "aov": 176.21
+          },
+          "Member": {
+            "revenue": 262698.51,
+            "orders": 1001,
+            "aov": 262.44
+          }
+        },
+        "2022-07": {
+          "Non-member": {
+            "revenue": 181693.4,
+            "orders": 933,
+            "aov": 194.74
+          },
+          "Member": {
+            "revenue": 278598.8,
+            "orders": 1099,
+            "aov": 253.5
+          }
+        },
+        "2022-08": {
+          "Non-member": {
+            "revenue": 160700.74,
+            "orders": 881,
+            "aov": 182.41
+          },
+          "Member": {
+            "revenue": 237104.87,
+            "orders": 953,
+            "aov": 248.8
+          }
+        },
+        "2022-09": {
+          "Non-member": {
+            "revenue": 188531.42,
+            "orders": 775,
+            "aov": 243.27
+          },
+          "Member": {
+            "revenue": 209429.62,
+            "orders": 776,
+            "aov": 269.88
+          }
+        },
+        "2022-10": {
+          "Non-member": {
+            "revenue": 95813.52,
+            "orders": 458,
+            "aov": 209.2
+          },
+          "Member": {
+            "revenue": 82461.39,
+            "orders": 363,
+            "aov": 227.17
+          }
+        },
+        "2022-11": {
+          "Non-member": {
+            "revenue": 120420.62,
+            "orders": 535,
+            "aov": 225.09
+          },
+          "Member": {
+            "revenue": 87945.63,
+            "orders": 385,
+            "aov": 228.43
+          }
+        },
+        "2022-12": {
+          "Non-member": {
+            "revenue": 158787.52,
+            "orders": 693,
+            "aov": 229.13
+          },
+          "Member": {
+            "revenue": 103557.58,
+            "orders": 427,
+            "aov": 242.52
+          }
+        }
+      },
+      "platform_sales": [
+        {
+          "platform": "website",
+          "revenue": 27238240.05,
+          "orders": 89426
+        },
+        {
+          "platform": "mobile app",
+          "revenue": 867794.81,
+          "orders": 18483
+        }
+      ]
+    };
+  </script>
+
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="w-64 flex-shrink-0 glass flex flex-col z-10 border-r border-gray-800">
+      <div class="p-6 flex items-center gap-3">
+        <img src="assets/logo_transparent.png" alt="JarvaTech Logo" class="w-10 h-10 rounded-lg object-cover"
+          onerror="this.src='https://ui-avatars.com/api/?name=JT&background=6c5ce7&color=fff&rounded=true'">
+        <h1 class="text-2xl font-bold outfit bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+          JarvaTech</h1>
+      </div>
+
+      <nav class="flex-1 px-4 space-y-2 mt-4">
+        <button onclick="switchTab('overview')" id="tab-btn-overview"
+          class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-left bg-gradient-to-r from-primary to-secondary text-white shadow-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
+            </path>
+          </svg>
+          Overview
+        </button>
+        <button onclick="switchTab('sales')" id="tab-btn-sales"
+          class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-left hover:bg-gray-800 text-gray-200">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+          </svg>
+          Sales & Revenue
+        </button>
+        <button onclick="switchTab('products')" id="tab-btn-products"
+          class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-left hover:bg-gray-800 text-gray-200">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+          </svg>
+          Product Performance
+        </button>
+        <button onclick="switchTab('loyalty')" id="tab-btn-loyalty"
+          class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-left hover:bg-gray-800 text-gray-200">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+            </path>
+          </svg>
+          Loyalty Program
+        </button>
+        <button onclick="switchTab('regional')" id="tab-btn-regional"
+          class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-left hover:bg-gray-800 text-gray-200">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+            </path>
+          </svg>
+          Regional Analysis
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto p-8 relative">
+      <div class="max-w-7xl mx-auto space-y-6 pb-20">
+
+        <!-- ==================== OVERVIEW TAB ==================== -->
+        <div id="tab-overview" class="tab-content active">
+          <h2 class="text-3xl font-bold outfit mb-6">Overview Dashboard</h2>
+
+          <!-- KPI Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+            <div class="glass p-5 rounded-2xl">
+              <p class="text-sm text-gray-400 font-medium">Total Revenue</p>
+              <h3 class="text-2xl font-bold outfit text-primary mt-1" id="kpi-revenue">...</h3>
+            </div>
+            <div class="glass p-5 rounded-2xl">
+              <p class="text-sm text-gray-400 font-medium">Avg Order Value</p>
+              <h3 class="text-2xl font-bold outfit text-secondary mt-1" id="kpi-aov">...</h3>
+            </div>
+            <div class="glass p-5 rounded-2xl">
+              <p class="text-sm text-gray-400 font-medium">Total Orders</p>
+              <h3 class="text-2xl font-bold outfit mt-1" id="kpi-orders">...</h3>
+            </div>
+            <div class="glass p-5 rounded-2xl">
+              <p class="text-sm text-gray-400 font-medium">Total Customers</p>
+              <h3 class="text-2xl font-bold outfit mt-1" id="kpi-customers">...</h3>
+            </div>
+            <div class="glass p-5 rounded-2xl">
+              <p class="text-sm text-gray-400 font-medium">Refund Rate</p>
+              <h3 class="text-2xl font-bold outfit text-red-400 mt-1" id="kpi-refund-rate">...</h3>
+            </div>
+          </div>
+
+          <!-- Insights + Recommendations -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+            <div class="glass p-6 rounded-2xl">
+              <h3 class="text-lg font-bold outfit mb-3 text-primary flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z">
+                  </path>
+                </svg>
+                Key Insights
+              </h3>
+              <ul class="space-y-2 text-sm text-gray-300">
+                <li class="flex items-start gap-2"><span class="text-primary mt-1">●</span><span><strong>Pandemic
+                      Peak:</strong> Revenue surged 163% to $10.15M in 2020, driven by remote work demand.</span></li>
+                <li class="flex items-start gap-2"><span class="text-red-400 mt-1">●</span><span><strong>2022
+                      Contraction:</strong> Revenue dropped 46% to $4.96M; Q4 hit historic lows ($178K in Oct).</span>
+                </li>
+                <li class="flex items-start gap-2"><span
+                    class="text-secondary mt-1">●</span><span><strong>Volume-Driven:</strong> The decline is driven by
+                    39.8% fewer orders, not lower AOV ($230 stable).</span></li>
+                <li class="flex items-start gap-2"><span class="text-accent1 mt-1">●</span><span><strong>Loyalty
+                      Strength:</strong> Members outspent non-members by $44.80/order in 2022, representing 53.7% of
+                    transactions.</span></li>
+                <li class="flex items-start gap-2"><span class="text-yellow-400 mt-1">●</span><span><strong>Product
+                      Concentration:</strong> Top 3 products generate 78.5% of total revenue ($22.06M).</span></li>
+              </ul>
+            </div>
+            <div class="glass p-6 rounded-2xl">
+              <h3 class="text-lg font-bold outfit mb-3 text-secondary flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4">
+                  </path>
+                </svg>
+                Recommendations
+              </h3>
+              <ul class="space-y-2 text-sm text-gray-300">
+                <li class="flex items-start gap-2"><span class="text-secondary mt-1">▸</span><span>Deploy win-back
+                    campaigns targeting lapsed 2020 pandemic cohort customers.</span></li>
+                <li class="flex items-start gap-2"><span class="text-secondary mt-1">▸</span><span>Secure inventory for
+                    Gaming Monitor, AirPods, MacBook Air (78.5% of revenue).</span></li>
+                <li class="flex items-start gap-2"><span class="text-secondary mt-1">▸</span><span>Accelerate loyalty
+                    enrollment to capture $44.80 AOV premium per order.</span></li>
+                <li class="flex items-start gap-2"><span class="text-secondary mt-1">▸</span><span>Audit laptop shipping
+                    to reduce 11%+ refund rates on ThinkPad & MacBook Air.</span></li>
+                <li class="flex items-start gap-2"><span class="text-secondary mt-1">▸</span><span>Expand LATAM presence
+                    (only 6% share despite proximity to NA market).</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- 4 Compact Charts -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="glass p-5 rounded-2xl cursor-pointer hover:ring-2 hover:ring-primary/30 transition-all"
+              onclick="switchTab('sales')">
+              <h3 class="text-sm font-bold outfit mb-2 text-gray-400 flex items-center justify-between">Revenue Trend
+                <span class="text-xs text-primary">→ Details</span>
+              </h3>
+              <div class="chart-container" style="height: 180px;"><canvas id="ovRevenueTrend"></canvas></div>
+            </div>
+            <div class="glass p-5 rounded-2xl cursor-pointer hover:ring-2 hover:ring-primary/30 transition-all"
+              onclick="switchTab('sales')">
+              <h3 class="text-sm font-bold outfit mb-2 text-gray-400 flex items-center justify-between">AOV by Year
+                <span class="text-xs text-primary">→ Details</span>
+              </h3>
+              <div class="chart-container" style="height: 180px;"><canvas id="ovAovYearly"></canvas></div>
+            </div>
+            <div class="glass p-5 rounded-2xl cursor-pointer hover:ring-2 hover:ring-primary/30 transition-all"
+              onclick="switchTab('loyalty')">
+              <h3 class="text-sm font-bold outfit mb-2 text-gray-400 flex items-center justify-between">Loyalty Sales
+                Trend <span class="text-xs text-primary">→ Details</span></h3>
+              <div class="chart-container" style="height: 180px;"><canvas id="ovLoyaltyTrend"></canvas></div>
+            </div>
+            <div class="glass p-5 rounded-2xl cursor-pointer hover:ring-2 hover:ring-primary/30 transition-all"
+              onclick="switchTab('regional')">
+              <h3 class="text-sm font-bold outfit mb-2 text-gray-400 flex items-center justify-between">Revenue by
+                Region <span class="text-xs text-primary">→ Details</span></h3>
+              <div class="chart-container" style="height: 180px;"><canvas id="ovRegionDonut"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== SALES & REVENUE TAB ==================== -->
+        <div id="tab-sales" class="tab-content">
+          <h2 class="text-3xl font-bold outfit mb-6">Sales & Revenue</h2>
+
+          <div class="glass p-6 rounded-3xl mb-6">
+            <h3 class="text-lg font-bold outfit mb-4">Monthly Revenue & Orders</h3>
+            <div class="chart-container" style="height: 400px;"><canvas id="monthlySalesChart"></canvas></div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="glass p-6 rounded-3xl">
+              <h3 class="text-lg font-bold outfit mb-4">Yearly Revenue Comparison</h3>
+              <div class="chart-container"><canvas id="yearlyChart"></canvas></div>
+            </div>
+            <div class="glass p-6 rounded-3xl">
+              <h3 class="text-lg font-bold outfit mb-4">Monthly AOV Trend</h3>
+              <div class="chart-container"><canvas id="monthlyAovChart"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PRODUCT PERFORMANCE TAB ==================== -->
+        <div id="tab-products" class="tab-content">
+          <h2 class="text-3xl font-bold outfit mb-6">Product Performance</h2>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div class="glass p-6 rounded-3xl">
+              <h3 class="text-lg font-bold outfit mb-4">All Products by Revenue</h3>
+              <div class="chart-container" style="height: 380px;"><canvas id="allProductsRevenueChart"></canvas></div>
+            </div>
+            <div class="glass p-6 rounded-3xl">
+              <h3 class="text-lg font-bold outfit mb-4">Refund Rate by Product</h3>
+              <div class="chart-container" style="height: 380px;"><canvas id="productRefundsSortedChart"></canvas></div>
+            </div>
+          </div>
+
+          <!-- Interactive Product Revenue Trend -->
+          <div class="glass p-6 rounded-3xl mb-6">
+            <h3 class="text-lg font-bold outfit mb-3">Product Revenue Trend</h3>
+            <p class="text-sm text-gray-400 mb-4">Click product names to highlight & compare. Click again to deselect.
+            </p>
+            <div id="product-slicer" class="flex flex-wrap gap-2 mb-4"></div>
+            <div class="chart-container" style="height: 400px;"><canvas id="productTrendInteractive"></canvas></div>
+          </div>
+
+          <!-- Product Detail Table -->
+          <div class="glass p-6 rounded-3xl">
+            <h3 class="text-lg font-bold outfit mb-4">Product Detail Table</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                  <tr class="border-b border-gray-700">
+                    <th class="p-3 font-semibold text-gray-300 cursor-pointer hover:text-primary"
+                      onclick="sortProductTable('name')">Product ↕</th>
+                    <th class="p-3 font-semibold text-gray-300 cursor-pointer hover:text-primary"
+                      onclick="sortProductTable('revenue')">Revenue ↕</th>
+                    <th class="p-3 font-semibold text-gray-300 cursor-pointer hover:text-primary"
+                      onclick="sortProductTable('units')">Units Sold ↕</th>
+                    <th class="p-3 font-semibold text-gray-300 cursor-pointer hover:text-primary"
+                      onclick="sortProductTable('total_orders')">Total Orders ↕</th>
+                    <th class="p-3 font-semibold text-gray-300 cursor-pointer hover:text-primary"
+                      onclick="sortProductTable('refund_count')">Refunds ↕</th>
+                    <th class="p-3 font-semibold text-gray-300 cursor-pointer hover:text-primary"
+                      onclick="sortProductTable('refund_rate')">Refund Rate ↕</th>
+                  </tr>
+                </thead>
+                <tbody id="product-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== LOYALTY PROGRAM TAB ==================== -->
+        <div id="tab-loyalty" class="tab-content">
+          <h2 class="text-3xl font-bold outfit mb-6">Loyalty Program Analysis</h2>
+
+          <!-- Loyalty KPI Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="glass p-5 rounded-2xl">
+              <p class="text-sm text-gray-400 font-medium">Member AOV Premium (2022)</p>
+              <h3 class="text-2xl font-bold outfit text-primary mt-1">$44.80</h3>
+              <p class="text-xs text-gray-500 mt-1">$250.94 (Member) vs $206.14 (Non-member)</p>
+            </div>
+            <div class="glass p-5 rounded-2xl">
+              <p class="text-sm text-gray-400 font-medium">Member Order Share (2022)</p>
+              <h3 class="text-2xl font-bold outfit text-secondary mt-1">53.7%</h3>
+              <p class="text-xs text-gray-500 mt-1">11,557 of 21,538 total orders</p>
+            </div>
+            <div class="glass p-5 rounded-2xl">
+              <p class="text-sm text-gray-400 font-medium">Total Member Revenue</p>
+              <h3 class="text-2xl font-bold outfit text-accent1 mt-1" id="loyalty-total-rev">...</h3>
+              <p class="text-xs text-gray-500 mt-1">Across all years</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div class="glass p-6 rounded-3xl">
+              <h3 class="text-lg font-bold outfit mb-4">Revenue by Loyalty Status</h3>
+              <div class="chart-container"><canvas id="loyaltyRevenueChart"></canvas></div>
+            </div>
+            <div class="glass p-6 rounded-3xl">
+              <h3 class="text-lg font-bold outfit mb-4">AOV by Loyalty Status</h3>
+              <div class="chart-container"><canvas id="loyaltyAOVChart"></canvas></div>
+            </div>
+          </div>
+
+          <div class="glass p-6 rounded-3xl">
+            <h3 class="text-lg font-bold outfit mb-4">Member vs Non-Member Order Count Trend</h3>
+            <div class="chart-container" style="height: 350px;"><canvas id="loyaltyOrderTrend"></canvas></div>
+          </div>
+        </div>
+
+        <!-- ==================== REGIONAL ANALYSIS TAB ==================== -->
+        <div id="tab-regional" class="tab-content">
+          <h2 class="text-3xl font-bold outfit mb-6">Regional Analysis</h2>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <div class="glass p-6 rounded-3xl lg:col-span-2">
+              <h3 class="text-lg font-bold outfit mb-4">Global Sales Map</h3>
+              <div id="map" class="rounded-xl border border-gray-700 z-0" style="height: 450px;"></div>
+            </div>
+            <div class="glass p-6 rounded-3xl">
+              <h3 class="text-lg font-bold outfit mb-4">Revenue by Region</h3>
+              <div class="chart-container" style="height: 350px;"><canvas id="regionDonutChart"></canvas></div>
+            </div>
+          </div>
+
+          <div class="glass p-6 rounded-3xl">
+            <h3 class="text-lg font-bold outfit mb-4">Top Countries Data</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-gray-700">
+                    <th class="p-3 font-semibold text-gray-300">Country</th>
+                    <th class="p-3 font-semibold text-gray-300">Region</th>
+                    <th class="p-3 font-semibold text-gray-300">Revenue</th>
+                    <th class="p-3 font-semibold text-gray-300">Orders</th>
+                  </tr>
+                </thead>
+                <tbody id="country-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- DATA DOWNLOAD SECTION -->
+        <div class="mt-12 pt-8 border-t border-gray-800 text-center">
+          <h4 class="text-lg font-semibold mb-4 text-gray-400">Data Downloads</h4>
+          <div class="flex flex-wrap justify-center gap-4">
+            <a href="customers.csv"
+              class="px-5 py-2 rounded-full border border-primary text-primary hover:bg-primary hover:text-white transition-colors text-sm font-medium">Download
+              customers.csv</a>
+            <a href="orders.csv"
+              class="px-5 py-2 rounded-full border border-secondary text-secondary hover:bg-secondary hover:text-white transition-colors text-sm font-medium">Download
+              orders.csv</a>
+            <a href="status.csv"
+              class="px-5 py-2 rounded-full border border-accent1 text-accent1 hover:bg-accent1 hover:text-white transition-colors text-sm font-medium">Download
+              status.csv</a>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // ===================== GLOBALS =====================
+    let charts = {};
+    let map = null;
+    let productTrendChart = null;
+    let selectedProducts = new Set();
+    let productTableSortKey = 'revenue';
+    let productTableSortAsc = false;
+
+    // ===================== FORMATTERS =====================
+    const formatMoney = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
+    const formatNum = (val) => new Intl.NumberFormat('en-US').format(val);
+    const formatK = (val) => {
+      if (val >= 1e6) return '$' + (val / 1e6).toFixed(1) + 'M';
+      if (val >= 1e3) return '$' + (val / 1e3).toFixed(0) + 'K';
+      return '$' + val;
+    };
+
+    const palette = {
+      primary: '#6c5ce7',
+      secondary: '#00cec9',
+      accent1: '#a29bfe',
+      accent2: '#81ecec',
+      red: '#ef4444',
+      yellow: '#f59e0b',
+      pink: '#ec4899',
+      green: '#10b981'
+    };
+
+    const productColors = [
+      palette.primary, palette.secondary, palette.accent1, palette.accent2,
+      palette.yellow, palette.pink, palette.green, palette.red
+    ];
+
+    // ===================== TAB LOGIC =====================
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.className = 'tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-left hover:bg-gray-800 text-gray-200';
+      });
+
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+      const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+      activeBtn.className = 'tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-left bg-gradient-to-r from-primary to-secondary text-white shadow-lg';
+
+      if (tabId === 'regional' && map) {
+        setTimeout(() => { map.invalidateSize(); }, 100);
+      }
+    }
+
+    // ===================== INIT DASHBOARD =====================
+    function initDashboard() {
+      const data = dashboardData;
+
+      // Populate KPIs
+      document.getElementById('kpi-revenue').textContent = formatMoney(data.kpis.total_revenue);
+      document.getElementById('kpi-aov').textContent = formatMoney(data.kpis.avg_order_value);
+      document.getElementById('kpi-orders').textContent = formatNum(data.kpis.total_orders);
+      document.getElementById('kpi-customers').textContent = formatNum(data.kpis.total_customers);
+      document.getElementById('kpi-refund-rate').textContent = data.kpis.refund_rate_percentage.toFixed(1) + '%';
+
+      // Loyalty total member revenue
+      const totalMemberRev = Object.values(data.loyalty_yearly_trend).reduce((sum, y) => sum + y.Member.revenue, 0);
+      document.getElementById('loyalty-total-rev').textContent = formatMoney(totalMemberRev);
+
+      Chart.defaults.font.family = "'Inter', sans-serif";
+      Chart.defaults.color = '#e2e8f0';
+      Chart.defaults.scale.grid.color = 'rgba(255,255,255,0.05)';
+
+      initOverviewCharts(data);
+      initSalesCharts(data);
+      initProductCharts(data);
+      initLoyaltyCharts(data);
+      initRegionalCharts(data);
+      initMap(data);
+      populateCountryTable(data);
+      populateProductTable(data);
+    }
+
+    // ===================== OVERVIEW CHARTS =====================
+    function initOverviewCharts(data) {
+      // 1. Revenue Trend (compact monthly line, minimal labels)
+      const labels = data.sales_trend.map(d => d.month);
+      const sparseLabels = labels.map((l, i) => {
+        const dt = new Date(l);
+        return dt.getMonth() === 0 ? dt.getFullYear().toString() : '';
+      });
+
+      charts.ovRevenue = new Chart(document.getElementById('ovRevenueTrend').getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: sparseLabels,
+          datasets: [{
+            data: data.sales_trend.map(d => d.revenue),
+            borderColor: palette.primary,
+            backgroundColor: palette.primary + '20',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { maxRotation: 0, font: { size: 10 } } },
+            y: { grid: { display: false }, ticks: { callback: formatK, font: { size: 10 } } }
+          }
+        }
+      });
+
+      // 2. AOV Yearly Bar
+      charts.ovAov = new Chart(document.getElementById('ovAovYearly').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: data.yearly_summary.map(d => d.year),
+          datasets: [{
+            data: data.yearly_summary.map(d => d.aov),
+            backgroundColor: [palette.accent1, palette.secondary, palette.primary, palette.accent2],
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false } },
+            y: { grid: { display: false }, ticks: { callback: v => '$' + v, font: { size: 10 } }, beginAtZero: false, min: 180 }
+          }
+        }
+      });
+
+      // 3. Loyalty Sales Trend (Member vs Non-Member revenue by year as line)
+      const lYears = ["2019", "2020", "2021", "2022"];
+      charts.ovLoyalty = new Chart(document.getElementById('ovLoyaltyTrend').getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: lYears,
+          datasets: [
+            {
+              label: 'Member',
+              data: lYears.map(y => data.loyalty_yearly_trend[y].Member.revenue),
+              borderColor: palette.primary,
+              backgroundColor: palette.primary + '20',
+              fill: true, tension: 0.4, pointRadius: 3, borderWidth: 2
+            },
+            {
+              label: 'Non-Member',
+              data: lYears.map(y => data.loyalty_yearly_trend[y]['Non-member'].revenue),
+              borderColor: palette.secondary,
+              backgroundColor: palette.secondary + '20',
+              fill: true, tension: 0.4, pointRadius: 3, borderWidth: 2
+            }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 10 } } } },
+          scales: {
+            x: { grid: { display: false } },
+            y: { grid: { display: false }, ticks: { callback: formatK, font: { size: 10 } } }
+          }
+        }
+      });
+
+      // 4. Regional Donut (compact)
+      const regData = data.regional_sales.filter(r => r.region !== 'UNK');
+      charts.ovRegion = new Chart(document.getElementById('ovRegionDonut').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+          labels: regData.map(r => r.region),
+          datasets: [{
+            data: regData.map(r => r.revenue),
+            backgroundColor: [palette.primary, palette.secondary, palette.accent1, palette.accent2],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 } } } }
+        }
+      });
+    }
+
+    // ===================== SALES CHARTS =====================
+    function initSalesCharts(data) {
+      // Monthly Revenue & Orders (dual axis)
+      charts.monthly = new Chart(document.getElementById('monthlySalesChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: data.sales_trend.map(d => d.month),
+          datasets: [
+            {
+              label: 'Revenue',
+              data: data.sales_trend.map(d => d.revenue),
+              backgroundColor: palette.primary,
+              yAxisID: 'y'
+            },
+            {
+              label: 'Orders',
+              data: data.sales_trend.map(d => d.orders),
+              type: 'line',
+              borderColor: palette.secondary,
+              backgroundColor: palette.secondary,
+              borderWidth: 2,
+              tension: 0.3,
+              pointRadius: 2,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: {
+            y: { position: 'left', ticks: { callback: formatK } },
+            y1: { position: 'right', grid: { drawOnChartArea: false } }
+          }
+        }
+      });
+
+      // Yearly Comparison
+      charts.yearly = new Chart(document.getElementById('yearlyChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: data.yearly_summary.map(d => d.year),
+          datasets: [{
+            label: 'Revenue',
+            data: data.yearly_summary.map(d => d.revenue),
+            backgroundColor: palette.accent1,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: { y: { ticks: { callback: formatK } } }
+        }
+      });
+
+      // Monthly AOV Trend (line, monthly granularity)
+      const aovData = data.sales_trend.map(d => ({
+        month: d.month,
+        aov: d.revenue / d.orders
+      }));
+
+      charts.monthlyAov = new Chart(document.getElementById('monthlyAovChart').getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: aovData.map(d => d.month),
+          datasets: [{
+            label: 'AOV',
+            data: aovData.map(d => d.aov),
+            borderColor: palette.secondary,
+            backgroundColor: palette.secondary + '20',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 2
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: {
+            y: { ticks: { callback: v => '$' + Math.round(v) } }
+          }
+        }
+      });
+    }
+
+    // ===================== PRODUCT CHARTS =====================
+    function initProductCharts(data) {
+      // All Products by Revenue (horizontal bar, all 8)
+      const allProducts = [...data.top_products].sort((a, b) => b.revenue - a.revenue);
+      charts.allProductsRev = new Chart(document.getElementById('allProductsRevenueChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: allProducts.map(d => d.name),
+          datasets: [{
+            label: 'Revenue',
+            data: allProducts.map(d => d.revenue),
+            backgroundColor: palette.primary,
+            borderRadius: 4
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true, maintainAspectRatio: false,
+          scales: { x: { ticks: { callback: formatK } } }
+        }
+      });
+
+      // Refund Rates sorted descending
+      const sortedRefunds = [...data.top_products].sort((a, b) => b.refund_rate - a.refund_rate);
+      charts.refundsSorted = new Chart(document.getElementById('productRefundsSortedChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: sortedRefunds.map(d => d.name),
+          datasets: [{
+            label: 'Refund Rate (%)',
+            data: sortedRefunds.map(d => d.refund_rate),
+            backgroundColor: sortedRefunds.map(d => d.refund_rate > 10 ? palette.red : d.refund_rate > 5 ? palette.yellow : palette.green),
+            borderRadius: 4
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true, maintainAspectRatio: false,
+          scales: { x: { ticks: { callback: v => v + '%' } } }
+        }
+      });
+
+      // Interactive Product Revenue Trend
+      initProductTrendInteractive(data);
+    }
+
+    function initProductTrendInteractive(data) {
+      const productNames = Object.keys(data.product_monthly_trend);
+      const months = Object.keys(Object.values(data.product_monthly_trend)[0]).sort();
+
+      // Build slicer buttons
+      const slicerContainer = document.getElementById('product-slicer');
+      slicerContainer.innerHTML = '';
+
+      const resetBtn = document.createElement('button');
+      resetBtn.textContent = 'Show All';
+      resetBtn.className = 'px-3 py-1 rounded-full text-xs font-semibold border border-gray-500 text-gray-300 hover:bg-gray-700 transition-colors';
+      resetBtn.onclick = () => {
+        selectedProducts.clear();
+        document.querySelectorAll('#product-slicer .prod-btn').forEach(b => b.classList.remove('ring-2'));
+        updateProductTrendChart(data);
+      };
+      slicerContainer.appendChild(resetBtn);
+
+      productNames.forEach((name, i) => {
+        const btn = document.createElement('button');
+        btn.textContent = name;
+        btn.className = 'prod-btn px-3 py-1 rounded-full text-xs font-semibold transition-all';
+        btn.style.backgroundColor = productColors[i] + '30';
+        btn.style.color = productColors[i];
+        btn.style.border = '1px solid ' + productColors[i] + '60';
+        btn.onclick = () => {
+          if (selectedProducts.has(name)) {
+            selectedProducts.delete(name);
+            btn.classList.remove('ring-2');
+          } else {
+            selectedProducts.add(name);
+            btn.classList.add('ring-2');
+            btn.style.ringColor = productColors[i];
+          }
+          updateProductTrendChart(data);
+        };
+        slicerContainer.appendChild(btn);
+      });
+
+      // Create initial chart
+      const datasets = productNames.map((name, i) => {
+        const pData = data.product_monthly_trend[name];
+        return {
+          label: name,
+          data: months.map(m => pData[m] || 0),
+          borderColor: productColors[i],
+          backgroundColor: productColors[i] + '20',
+          tension: 0.3,
+          borderWidth: 3,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        };
+      });
+
+      productTrendChart = new Chart(document.getElementById('productTrendInteractive').getContext('2d'), {
+        type: 'line',
+        data: { labels: months, datasets },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: { y: { ticks: { callback: formatK } } },
+          plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 12 } }
+          }
+        }
+      });
+    }
+
+    function updateProductTrendChart(data) {
+      const productNames = Object.keys(data.product_monthly_trend);
+      const months = Object.keys(Object.values(data.product_monthly_trend)[0]).sort();
+      const hasSelection = selectedProducts.size > 0;
+
+      productTrendChart.data.datasets = productNames.map((name, i) => {
+        const pData = data.product_monthly_trend[name];
+        const isSelected = selectedProducts.has(name);
+        const opacity = hasSelection ? (isSelected ? 1 : 0.08) : 1;
+        const bw = hasSelection ? (isSelected ? 4 : 1) : 3;
+        const pr = hasSelection ? (isSelected ? 5 : 0) : 4;
+
+        return {
+          label: name,
+          data: months.map(m => pData[m] || 0),
+          borderColor: productColors[i] + (hasSelection && !isSelected ? '15' : 'ff'),
+          backgroundColor: productColors[i] + (hasSelection && !isSelected ? '05' : '20'),
+          tension: 0.3,
+          borderWidth: bw,
+          pointRadius: pr,
+          pointHoverRadius: 6
+        };
+      });
+      productTrendChart.update();
+    }
+
+    // ===================== LOYALTY CHARTS =====================
+    function initLoyaltyCharts(data) {
+      const lYears = ["2019", "2020", "2021", "2022"];
+      const lMonths = Object.keys(data.loyalty_monthly_trend).sort();
+
+      // Revenue by Loyalty Status
+      charts.loyaltyRev = new Chart(document.getElementById('loyaltyRevenueChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: lYears,
+          datasets: [
+            { label: 'Non-member', data: lYears.map(y => data.loyalty_yearly_trend[y]['Non-member'].revenue), backgroundColor: palette.accent1 },
+            { label: 'Member', data: lYears.map(y => data.loyalty_yearly_trend[y].Member.revenue), backgroundColor: palette.primary }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: { y: { ticks: { callback: formatK } } }
+        }
+      });
+
+      // AOV by Loyalty Status
+      charts.loyaltyAov = new Chart(document.getElementById('loyaltyAOVChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: lYears,
+          datasets: [
+            { label: 'Non-member', data: lYears.map(y => data.loyalty_yearly_trend[y]['Non-member'].aov), backgroundColor: palette.accent2 },
+            { label: 'Member', data: lYears.map(y => data.loyalty_yearly_trend[y].Member.aov), backgroundColor: palette.secondary }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: { y: { ticks: { callback: v => '$' + v } } }
+        }
+      });
+
+      // Member vs Non-Member Order Count Trend
+      charts.loyaltyOrders = new Chart(document.getElementById('loyaltyOrderTrend').getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: lMonths,
+          datasets: [
+            {
+              label: 'Member Orders',
+              data: lMonths.map(m => data.loyalty_monthly_trend[m].Member.orders),
+              borderColor: palette.primary,
+              backgroundColor: palette.primary + '20',
+              fill: true, tension: 0.3, borderWidth: 3, pointRadius: 5
+            },
+            {
+              label: 'Non-member Orders',
+              data: lMonths.map(m => data.loyalty_monthly_trend[m]['Non-member'].orders),
+              borderColor: palette.secondary,
+              backgroundColor: palette.secondary + '20',
+              fill: true, tension: 0.3, borderWidth: 3, pointRadius: 5
+            }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: { y: { ticks: { callback: v => v >= 1000 ? (v / 1000).toFixed(0) + 'K' : v } } }
+        }
+      });
+    }
+
+    // ===================== REGIONAL CHARTS =====================
+    function initRegionalCharts(data) {
+      const regData = data.regional_sales.filter(r => r.region !== 'UNK');
+      charts.regionDonut = new Chart(document.getElementById('regionDonutChart').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+          labels: regData.map(r => r.region),
+          datasets: [{
+            data: regData.map(r => r.revenue),
+            backgroundColor: [palette.primary, palette.secondary, palette.accent1, palette.accent2],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { position: 'right' } }
+        }
+      });
+    }
+
+    // ===================== MAP =====================
+    function initMap(data) {
+      const coords = {
+        "United States": [37.09, -95.71], "United Kingdom": [55.37, -3.43],
+        "Canada": [56.13, -106.34], "Japan": [36.20, 138.25],
+        "Germany": [51.16, 10.45], "Australia": [-25.27, 133.77],
+        "Brazil": [-14.23, -51.92], "France": [46.22, 2.21],
+        "Spain": [40.46, -3.74], "Netherlands": [52.13, 5.29],
+        "Italy": [41.87, 12.56], "India": [20.59, 78.96],
+        "South Korea": [35.90, 127.76], "Switzerland": [46.81, 8.22],
+        "Mexico": [23.63, -102.55], "Sweden": [60.12, 18.64],
+        "Israel": [31.04, 34.85], "Denmark": [56.26, 9.50],
+        "Norway": [60.47, 8.46], "New Zealand": [-40.90, 174.88]
+      };
+
+      const regionColors = { "NA": "#6c5ce7", "EMEA": "#00cec9", "APAC": "#10b981", "LATAM": "#ec4899" };
+
+      map = L.map('map').setView([20, 0], 2);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; CartoDB',
+        subdomains: 'abcd',
+        maxZoom: 19
+      }).addTo(map);
+
+      const topCountries = data.country_sales.slice(0, 20);
+      topCountries.forEach(c => {
+        if (coords[c.country]) {
+          const radius = Math.max(5, Math.sqrt(c.revenue) / 100);
+          const color = regionColors[c.region] || '#999';
+          L.circleMarker(coords[c.country], {
+            radius, fillColor: color, color, weight: 1, opacity: 0.8, fillOpacity: 0.6
+          })
+            .bindTooltip(`<b>${c.country}</b><br/>Revenue: ${formatMoney(c.revenue)}<br/>Orders: ${formatNum(c.orders)}`)
+            .addTo(map);
+        }
+      });
+    }
+
+    // ===================== TABLES =====================
+    function populateCountryTable(data) {
+      const tbody = document.getElementById('country-table-body');
+      data.country_sales.slice(0, 20).forEach(c => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-gray-800 hover:bg-gray-800/50 transition-colors';
+        tr.innerHTML = `
+                    <td class="p-3 font-medium">${c.country}</td>
+                    <td class="p-3"><span class="px-2 py-1 text-xs rounded-full bg-gray-700">${c.region}</span></td>
+                    <td class="p-3 text-primary font-semibold">${formatMoney(c.revenue)}</td>
+                    <td class="p-3 text-gray-400">${formatNum(c.orders)}</td>
+                `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function populateProductTable(data) {
+      const tbody = document.getElementById('product-table-body');
+      tbody.innerHTML = '';
+      const sorted = [...data.top_products].sort((a, b) => {
+        const av = a[productTableSortKey], bv = b[productTableSortKey];
+        if (typeof av === 'string') return productTableSortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
+        return productTableSortAsc ? av - bv : bv - av;
+      });
+
+      sorted.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-gray-800 hover:bg-gray-800/50 transition-colors';
+        const rateColor = p.refund_rate > 10 ? 'text-red-400' : p.refund_rate > 5 ? 'text-yellow-400' : 'text-green-400';
+        tr.innerHTML = `
+                    <td class="p-3 font-medium">${p.name}</td>
+                    <td class="p-3 text-primary font-semibold">${formatMoney(p.revenue)}</td>
+                    <td class="p-3 text-gray-300">${formatNum(p.units)}</td>
+                    <td class="p-3 text-gray-300">${formatNum(p.total_orders)}</td>
+                    <td class="p-3 text-gray-300">${formatNum(p.refund_count)}</td>
+                    <td class="p-3 ${rateColor} font-semibold">${p.refund_rate.toFixed(2)}%</td>
+                `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function sortProductTable(key) {
+      if (productTableSortKey === key) {
+        productTableSortAsc = !productTableSortAsc;
+      } else {
+        productTableSortKey = key;
+        productTableSortAsc = key === 'name';
+      }
+      populateProductTable(dashboardData);
+    }
+
+    // ===================== OVERVIEW CHART (mini sparkline) =====================
+    // Already created in initOverviewCharts
+
+    document.addEventListener('DOMContentLoaded', initDashboard);
+
+  </script>
+</body>
+
+</html>
